@@ -1,0 +1,106 @@
+﻿@model List<AdminPersonelViewModel>
+
+@{
+    ViewData["Title"] = "Personel Listesi";
+}
+
+<style>
+    .btn-custom {
+        background-color: #1D3557;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .btn-custom:hover {
+            background-color: #466784;
+            color: #fff;
+        }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1D3557;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+</style>
+
+@if (TempData["BasariMesaji"] != null)
+{
+    <div id="basariAlert" class="alert alert-success alert-dismissible fade show text-center shadow-sm" role="alert">
+        @TempData["BasariMesaji"]
+    </div>
+    <script>
+        setTimeout(function () {
+            var alertBox = document.getElementById('basariAlert');
+            if (alertBox) {
+                alertBox.classList.remove('show');
+                alertBox.classList.add('fade');
+            }
+        }, 2000);
+    </script>
+}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <a class="btn btn-custom" asp-action="CreatePersonel" asp-controller="Admin">+ Yeni Personel Oluştur</a>
+
+        <h2 class="section-title flex-grow-1 text-center">Personel Listesi</h2>
+
+        <a class="btn btn-custom" asp-action="AllAppointment" asp-controller="Admin">Tüm Tayin Taleplerini Görüntüle →</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover shadow-sm bg-white">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Sicil No</th>
+                    <th>Ad Soyad</th>
+                    <th>Unvan</th>
+                    <th style="width: 90px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var personel in Model)
+                {
+                    <tr>
+                        <td>@personel.SicilNo</td>
+                        <td>@personel.AdSoyad</td>
+                        <td>@personel.Unvan</td>
+                        <td>
+                            <form id="delete-personel-form-@personel.Id" asp-action="Delete" asp-controller="Admin" asp-route-id="@personel.Id" method="post" class="d-inline">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmPersonelDelete(@personel.Id)">Sil</button>
+                            </form>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmPersonelDelete(id) {
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu personeli silmek üzeresiniz!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sil',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-personel-form-${id}`).submit();
+                }
+            });
+        }
+    </script>
+}

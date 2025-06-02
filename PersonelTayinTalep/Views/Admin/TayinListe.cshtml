@@ -1,0 +1,135 @@
+﻿@model List<AdminTayinTalepViewModel>
+
+@{
+    ViewData["Title"] = "Tüm Tayin Talepleri";
+}
+
+<style>
+    .btn-custom-nav {
+        border: 2px solid #0b2e4b;
+        color: white;
+        background-color: #0b2e4b;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .btn-custom-nav:hover {
+            background-color: #2d4c67;
+            border-color: #2d4c67;
+            color: white;
+        }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+        .page-header h2 {
+            flex-grow: 1;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 0;
+            color: #0b2e4b;
+        }
+</style>
+
+
+@if (TempData["BasariMesaji"] != null)
+{
+    <div id="basariAlert" class="alert alert-success alert-dismissible fade show text-center shadow-sm" role="alert">
+        @TempData["BasariMesaji"]
+    </div>
+    <script>
+        setTimeout(function () {
+            var alertBox = document.getElementById('basariAlert');
+            if (alertBox) {
+                alertBox.classList.remove('show');
+                alertBox.classList.add('fade');
+            }
+        }, 2000);
+    </script>
+}
+
+<div class="container my-4">
+    <div class="page-header">
+        <a class="btn btn-custom-nav" asp-action="Index" asp-controller="Admin">⟵ Personel Listesi</a>
+        <h2 class="text-center text-dark m-0 flex-grow-1 text-nowrap text-md-center">
+            Tüm Tayin Talepleri
+        </h2>
+        <a class="btn btn-custom-nav" asp-action="ExportTayinTalepleriToExcel" asp-controller="Admin">Excel’e Aktar</a>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center shadow-sm bg-white">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Adı Soyadı</th>
+                    <th>Sicil No</th>
+                    <th>Unvan</th>
+                    <th>Talep Türü</th>
+                    <th>Açıklama</th>
+                    <th>Başvuru Tarihi</th>
+                    <th>Tercihler</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.AdSoyad</td>
+                        <td>@item.SicilNo</td>
+                        <td>@item.Unvan</td>
+                        <td>@item.TalepTuru</td>
+                        <td>@item.Aciklama</td>
+                        <td>@item.BasvuruTarihi.ToShortDateString()</td>
+                        <td>
+                            @foreach (var tercih in item.Tercihler)
+                            {
+                                <div>@tercih</div>
+                            }
+                        </td>
+                        <td>
+                            <form id="delete-form-@item.TalepId" asp-controller="Admin" asp-action="DeleteTayinTalep" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@item.TalepId" />
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(@item.TalepId)">
+                                    Sil
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu tayin talebini silmek üzeresiniz!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sil',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-form-${id}`).submit();
+                }
+            });
+        }
+    </script>
+}

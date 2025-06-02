@@ -1,0 +1,130 @@
+﻿@model PersonelTayinTalep.Models.PersonelTayinTalepViewModel
+
+@{
+    ViewData["Title"] = "Tayin Taleplerim";
+    var sonTalep = Model.Talepler?.OrderByDescending(t => t.BasvuruTarihi).FirstOrDefault();
+}
+
+<style>
+    .btn-outline-secondary {
+        border-color: #2C3E50;
+        color: #2C3E50;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #0ff000;
+            color: white;
+        }
+
+    .btn-dark {
+        background-color: #ff0000;
+        border: none;
+    }
+
+        .btn-dark:hover {
+            background-color: #00ff00;
+        }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1D3557;
+    }
+</style>
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold" style="color:#1D3557;">Tayin Taleplerim</h2>
+        </div>
+    </div>
+
+    @if (TempData["TayinUyari"] != null)
+    {
+        <div id="eroroAlert" class="alert alert-warning shadow-sm text-center">
+            @TempData["TayinUyari"]
+        </div>
+        <script>
+            setTimeout(function () {
+                var alertBox = document.getElementById('eroroAlert');
+                if (alertBox) {
+                    alertBox.classList.remove('show');
+                    alertBox.classList.add('fade');
+                }
+            }, 5000);
+        </script>
+    }
+
+    @if (TempData["BasariMesaji"] != null)
+    {
+        <div id="basariAlert" class="alert alert-success alert-dismissible fade show text-center shadow-sm" role="alert">
+            @TempData["BasariMesaji"]
+        </div>
+        <script>
+            setTimeout(function () {
+                var alertBox = document.getElementById('basariAlert');
+                if (alertBox) {
+                    alertBox.classList.remove('show');
+                    alertBox.classList.add('fade');
+                }
+            }, 2000);
+        </script>
+    }
+
+    <div class="card border-0 shadow-sm mb-4" style="background-color: #f8f9fa;">
+        <div class="card-body">
+            <h5 class="card-title text-dark mb-3">Personel Bilgileri</h5>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 mb-2"><strong>Adı Soyadı:</strong> @Model.Personel.Adi @Model.Personel.Soyadi</div>
+                <div class="col-md-4 col-sm-6 mb-2"><strong>Unvan:</strong> @Model.Personel.Unvan</div>
+                <div class="col-md-4 col-sm-6 mb-2"><strong>Sicil No:</strong> @Model.Personel.SicilNo</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a class="btn btn-dark text-white shadow-sm" asp-action="Create" asp-controller="Personel">+ Yeni Tayin Talebi Oluştur</a>
+    </div>
+
+    @if (Model.Talepler != null && Model.Talepler.Any())
+    {
+        <div class="table-responsive shadow-sm">
+            <table class="table table-bordered table-hover align-middle text-center">
+                <thead style="background-color:#1D3557; color:white;">
+                    <tr>
+                        <th>Talep Türü</th>
+                        <th>Açıklama</th>
+                        <th>Başvuru Tarihi</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var talep in Model.Talepler.OrderByDescending(t => t.BasvuruTarihi))
+                    {
+                        <tr>
+                            <td>@talep.TalepTuru</td>
+                            <td>@talep.Aciklama</td>
+                            <td>@talep.BasvuruTarihi.ToShortDateString()</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                    @if (talep.Id == sonTalep?.Id && talep.BasvuruTarihi.Date == DateTime.Today)
+                                    {
+                                        <a asp-controller="Personel" asp-action="Edit" asp-route-id="@talep.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Geçmiş talep</span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">Henüz herhangi bir tayin talebi oluşturmadınız.</div>
+    }
+</div>

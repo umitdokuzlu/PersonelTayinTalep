@@ -1,0 +1,73 @@
+﻿@model Core.DTOs.LoginViewModel
+
+@{
+    ViewData["Title"] = "Adalet Bakanlığı Tayin Talep Sistemi Giriş";
+    Layout = "_Layout";
+}
+
+<style>
+    body {
+        background: linear-gradient(to right, #e9ecef, #dee2e6);
+    }
+
+    .login-container {
+        max-width: 450px;
+        margin: 60px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px #ccc;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+        .login-header img {
+            width: 80px;
+            margin-bottom: 10px;
+        }
+
+        .login-header h2 {
+            font-size: 1.5rem;
+            color: #343a40;
+        }
+</style>
+
+<div class="login-container">
+    <div class="login-header">
+        <img src="/images/adalet-bakanligi-logo.png" alt="Adalet Bakanlığı Logosu" style="width:150px;" />
+        <h2>Adalet Bakanlığı<br />Tayin Talep Sistemi</h2>
+    </div>
+
+    <form asp-action="Login" method="post">
+        <div class="form-group mb-3">
+            <label asp-for="SicilNo" class="form-label">Sicil Numarası</label>
+            <input asp-for="SicilNo" class="form-control" />
+            <span asp-validation-for="SicilNo" class="text-danger small"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Sifre" class="form-label">Şifre</label>
+            <input asp-for="Sifre" class="form-control" type="password" />
+            <span asp-validation-for="Sifre" class="text-danger small"></span>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+
+        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
